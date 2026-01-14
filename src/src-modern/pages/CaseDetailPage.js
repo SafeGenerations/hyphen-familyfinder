@@ -1,18 +1,20 @@
 // Case Detail Page - Family Finder with Network Visualization
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, Mail, Filter, Search, Download, Phone, MessageSquare, 
-  Calendar, Users, CheckCircle, AlertCircle, Clock, User, MapPin
+import {
+  ArrowLeft, Mail, Filter, Search, Download, Phone, MessageSquare,
+  Calendar, Users, CheckCircle, AlertCircle, Clock, User, MapPin, Plus
 } from 'lucide-react';
 import { getCase } from '../services/caseService';
 import { searchContactEvents } from '../services/contactEventService';
+import { getNetworkGraph } from '../services/networkDataService';
 import './CaseDetailPage.css';
 
 const CaseDetailPage = () => {
   const { caseId } = useParams();
   const navigate = useNavigate();
   const [caseData, setCaseData] = useState(null);
+  const [networkData, setNetworkData] = useState(null);
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('network'); // network, list, analytics, activity
@@ -25,15 +27,30 @@ const CaseDetailPage = () => {
   const loadCaseData = async () => {
     setLoading(true);
     try {
+      // Load case data
       const data = await getCase(caseId);
       setCaseData(data);
 
+      // Load network graph data
+      try {
+        const networkGraph = await getNetworkGraph(caseId);
+        setNetworkData(networkGraph);
+      } catch (netErr) {
+        console.error('Error loading network:', netErr);
+        setNetworkData({ nodes: [], edges: [], summary: null });
+      }
+
       // Load recent activities for this case
-      const contactData = await searchContactEvents({
-        entityId: data.childName,
-        limit: 10
-      });
-      setActivities(contactData.events || []);
+      try {
+        const contactData = await searchContactEvents({
+          childId: caseId,
+          limit: 10
+        });
+        setActivities(contactData.data || []);
+      } catch (actErr) {
+        console.error('Error loading activities:', actErr);
+        setActivities([]);
+      }
     } catch (error) {
       console.error('Error loading case:', error);
     } finally {
@@ -42,14 +59,16 @@ const CaseDetailPage = () => {
   };
 
   const getHealthLabel = (health) => {
-    if (health >= 7) return 'Healthy';
-    if (health >= 4) return 'Moderate';
+    if (health >= 12) return 'Excellent';
+    if (health >= 8) return 'Healthy';
+    if (health >= 5) return 'Moderate';
     return 'Needs Attention';
   };
 
   const getHealthColor = (health) => {
-    if (health >= 7) return '#10b981';
-    if (health >= 4) return '#f59e0b';
+    if (health >= 12) return '#10b981';
+    if (health >= 8) return '#3b82f6';
+    if (health >= 5) return '#f59e0b';
     return '#dc2626';
   };
 
@@ -81,27 +100,38 @@ const CaseDetailPage = () => {
   const getStatusIcon = (status) => {
     switch (status?.toLowerCase()) {
       case 'active': return { icon: <CheckCircle size={16} />, color: '#10b981', bg: '#d1fae5' };
+      case 'warming': return { icon: <Clock size={16} />, color: '#f59e0b', bg: '#fef3c7' };
       case 'pending': return { icon: <Clock size={16} />, color: '#f59e0b', bg: '#fef3c7' };
+      case 'cold':
       case 'inactive': return { icon: <AlertCircle size={16} />, color: '#ef4444', bg: '#fee2e2' };
       default: return { icon: <CheckCircle size={16} />, color: '#6b7280', bg: '#f3f4f6' };
     }
   };
 
-  // Mock network members for visualization
-  const networkMembers = [
-    { id: 1, name: 'Christopher Davis', role: 'Biological Father', status: 'active', x: 200, y: 150 },
-    { id: 2, name: 'Robert Johnson', role: 'Grandfather (maternal)', status: 'active', x: 100, y: 250 },
-    { id: 3, name: 'Patricia Wilson', role: 'Possible aunt (maternal)', status: 'pending', x: 300, y: 250 },
-    { id: 4, name: 'Diana Jackson', role: 'Possible uncle (paternal)', status: 'active', x: 400, y: 200 },
-    { id: 5, name: 'Lee Thompson', role: 'Former Sponsor', status: 'active', x: 150, y: 350 },
-    { id: 6, name: 'Sarah Martinez', role: 'Aunt (Maternal)', status: 'inactive', x: 250, y: 350 },
-    { id: 7, name: 'Amanda Martinez', role: 'Mother', status: 'inactive', x: 300, y: 100 },
-    { id: 8, name: 'Tiffany Garcia', role: 'Foreign-birth', status: 'pending', x: 500, y: 250 },
-    { id: 9, name: 'James Wilson', role: 'Uncle (paternal)', status: 'active', x: 450, y: 350 },
-    { id: 10, name: 'Jennifer White', role: 'Grandparent', status: 'active', x: 350, y: 400 },
-    { id: 11, name: 'Michael Chen', role: 'Family Friend', status: 'active', x: 200, y: 450 },
-    { id: 12, name: 'David Lee', role: 'Cousin (maternal)', status: 'inactive', x: 100, y: 400 }
-  ];
+  // Calculate positions for network members in a circular layout around the child
+  const calculateNodePositions = (nodes) => {
+    if (!nodes || nodes.length === 0) return [];
+
+    const centerX = 300;
+    const centerY = 275;
+    const radius = 180;
+
+    return nodes.map((node, index) => {
+      const angle = (2 * Math.PI * index) / nodes.length - Math.PI / 2;
+      return {
+        ...node,
+        id: node._id || node.id,
+        name: node.name || `${node.firstName || ''} ${node.lastName || ''}`.trim(),
+        role: node.relationshipToChild || node.role || 'Unknown',
+        status: node.activityState || node.status || 'active',
+        x: centerX + radius * Math.cos(angle),
+        y: centerY + radius * Math.sin(angle)
+      };
+    });
+  };
+
+  // Use real network data from API, with fallback to empty array
+  const networkMembers = calculateNodePositions(networkData?.nodes || []);
 
   const childNode = { id: 'child', name: caseData?.childName || 'Child', role: 'Child', x: 300, y: 275 };
 
@@ -147,20 +177,24 @@ const CaseDetailPage = () => {
             <Phone size={18} />
             Quick Contact
           </button>
+          <button className="cd-add-member" onClick={() => navigate(`/family-finder/cases/${caseId}/add-member`)}>
+            <Plus size={18} />
+            Add Member
+          </button>
         </div>
       </div>
 
       {/* Health Dashboard */}
       <div className="cd-health-dashboard">
         <div className="cd-health-card">
-          <div className="cd-health-score" style={{ color: getHealthColor(caseData.networkHealth) }}>
-            {caseData.networkHealth}<span>/10</span>
+          <div className="cd-health-score" style={{ color: getHealthColor(networkData?.summary?.metrics?.score || caseData.networkHealth || 0) }}>
+            {networkData?.summary?.metrics?.score || caseData.networkHealth || 0}<span>/15</span>
           </div>
           <div className="cd-health-label">
-            <CheckCircle size={20} style={{ color: getHealthColor(caseData.networkHealth) }} />
+            <CheckCircle size={20} style={{ color: getHealthColor(networkData?.summary?.metrics?.score || caseData.networkHealth || 0) }} />
             Network Health Index<br />
-            <strong style={{ color: getHealthColor(caseData.networkHealth) }}>
-              {getHealthLabel(caseData.networkHealth)}
+            <strong style={{ color: getHealthColor(networkData?.summary?.metrics?.score || caseData.networkHealth || 0) }}>
+              {getHealthLabel(networkData?.summary?.metrics?.score || caseData.networkHealth || 0)}
             </strong>
           </div>
         </div>
@@ -170,7 +204,7 @@ const CaseDetailPage = () => {
             <CheckCircle size={24} />
           </div>
           <div className="cd-stat-content">
-            <div className="cd-stat-value">{caseData.networkMembers.active}</div>
+            <div className="cd-stat-value">{networkData?.summary?.metrics?.activeCount || caseData.networkMembers?.active || 0}</div>
             <div className="cd-stat-label">Active Connections</div>
           </div>
         </div>
@@ -180,7 +214,7 @@ const CaseDetailPage = () => {
             <AlertCircle size={24} />
           </div>
           <div className="cd-stat-content">
-            <div className="cd-stat-value">{caseData.networkMembers.inactive || 0}</div>
+            <div className="cd-stat-value">{networkData?.summary?.activityBuckets?.cold || caseData.networkMembers?.inactive || 0}</div>
             <div className="cd-stat-label">Needs Follow-up</div>
           </div>
         </div>
@@ -190,7 +224,7 @@ const CaseDetailPage = () => {
             <Users size={24} />
           </div>
           <div className="cd-stat-content">
-            <div className="cd-stat-value">{caseData.networkMembers.total}</div>
+            <div className="cd-stat-value">{networkData?.summary?.counts?.members || caseData.networkMembers?.total || 0}</div>
             <div className="cd-stat-label">Total Network</div>
           </div>
         </div>
@@ -236,15 +270,15 @@ const CaseDetailPage = () => {
               <div className="cd-map-legend">
                 <div className="cd-legend-item">
                   <div className="cd-legend-dot" style={{ background: '#10b981' }}></div>
-                  <span>Active ({caseData.networkMembers.active || 0})</span>
+                  <span>Active ({networkData?.summary?.activityBuckets?.active || caseData.networkMembers?.active || 0})</span>
                 </div>
                 <div className="cd-legend-item">
                   <div className="cd-legend-dot" style={{ background: '#f59e0b' }}></div>
-                  <span>Moderate (30-60d)</span>
+                  <span>Warming ({networkData?.summary?.activityBuckets?.warming || 0})</span>
                 </div>
                 <div className="cd-legend-item">
                   <div className="cd-legend-dot" style={{ background: '#ef4444' }}></div>
-                  <span>Inactive (&gt;60d)</span>
+                  <span>Cold ({networkData?.summary?.activityBuckets?.cold || 0})</span>
                 </div>
               </div>
 
@@ -309,7 +343,7 @@ const CaseDetailPage = () => {
                     fontWeight="600"
                     dy="5"
                   >
-                    Patricia
+                    {(caseData?.childName || 'Child').split(' ')[0]}
                   </text>
                   <foreignObject
                     x={childNode.x - 30}
@@ -322,6 +356,19 @@ const CaseDetailPage = () => {
                     </div>
                   </foreignObject>
                 </g>
+
+                {/* Empty state message */}
+                {networkMembers.length === 0 && (
+                  <text
+                    x="300"
+                    y="450"
+                    textAnchor="middle"
+                    fill="#6b7280"
+                    fontSize="14"
+                  >
+                    No network members yet. Add members to build the network.
+                  </text>
+                )}
               </svg>
 
               <div className="cd-map-tip">

@@ -5,7 +5,7 @@
  * Communicates with the /api/network endpoints.
  */
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:7071';
+import API_BASE_URL from './apiConfig';
 
 /**
  * Get complete network graph for a child/case
