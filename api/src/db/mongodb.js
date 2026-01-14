@@ -14,12 +14,19 @@ let cachedClient = null;
 let cachedDb = null;
 let useFileFallback = false;
 
-// File-based storage directory
+// File-based storage directory (only used in local development)
 const STORAGE_DIR = path.join(__dirname, '../../.dev-data');
+const IS_AZURE = process.env.WEBSITE_RUN_FROM_PACKAGE === '1' || process.env.COSMOS_CONNECTION_STRING;
 
-// Ensure storage directory exists
-if (!fs.existsSync(STORAGE_DIR)) {
-  fs.mkdirSync(STORAGE_DIR, { recursive: true });
+// Ensure storage directory exists (only for local development)
+if (!IS_AZURE) {
+  try {
+    if (!fs.existsSync(STORAGE_DIR)) {
+      fs.mkdirSync(STORAGE_DIR, { recursive: true });
+    }
+  } catch (e) {
+    console.log('Could not create storage directory:', e.message);
+  }
 }
 
 /**

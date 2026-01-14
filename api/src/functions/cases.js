@@ -1,108 +1,68 @@
 const { app } = require('@azure/functions');
-const fs = require('fs');
-const path = require('path');
+const { getCollection, generateId } = require('../db/mongodb');
 
-// File-based storage for development
-const STORAGE_DIR = path.join(__dirname, '../../.dev-data');
-const CASES_FILE = path.join(STORAGE_DIR, 'cases.json');
-
-// Ensure storage directory exists
-if (!fs.existsSync(STORAGE_DIR)) {
-  fs.mkdirSync(STORAGE_DIR, { recursive: true });
-}
-
-// In-memory store
-let casesStore = [];
-
-// Load existing cases on startup
-if (fs.existsSync(CASES_FILE)) {
-  try {
-    const data = fs.readFileSync(CASES_FILE, 'utf8');
-    casesStore = JSON.parse(data);
-    console.log(`📂 Loaded ${casesStore.length} cases from storage`);
-  } catch (error) {
-    console.error('Error loading cases:', error);
-    casesStore = [];
+// Sample cases for database initialization
+const SAMPLE_CASES = [
+  {
+    _id: 'CASE-001',
+    caseId: 'CASE-CASE-001',
+    childName: 'Child case-001',
+    priority: 'low',
+    status: 'active',
+    networkHealth: 8,
+    networkMembers: { active: 13, inactive: 4, total: 17 },
+    flags: [],
+    lastUpdated: new Date('2025-10-20').toISOString(),
+    genogramData: null,
+    createdAt: new Date('2025-10-01').toISOString()
+  },
+  {
+    _id: 'CASE-002',
+    caseId: 'CASE-CASE-002',
+    childName: 'Marcus Johnson',
+    priority: 'low',
+    status: 'active',
+    networkHealth: 10,
+    networkMembers: { active: 3, inactive: 0, total: 3 },
+    flags: [],
+    lastUpdated: new Date('2025-10-19').toISOString(),
+    genogramData: null,
+    createdAt: new Date('2025-09-15').toISOString()
+  },
+  {
+    _id: 'CASE-003',
+    caseId: 'CASE-CASE-003',
+    childName: 'Sofia Rodriguez',
+    priority: 'high',
+    status: 'active',
+    networkHealth: 3,
+    networkMembers: { active: 1, inactive: 2, total: 3 },
+    flags: ['low health', 'inactive member', 'no placement option'],
+    lastUpdated: new Date('2025-10-19').toISOString(),
+    genogramData: null,
+    createdAt: new Date('2025-08-10').toISOString()
+  },
+  {
+    _id: 'CASE-004',
+    caseId: 'CASE-CASE-004',
+    childName: 'Tyler Bennett',
+    priority: 'medium',
+    status: 'active',
+    networkHealth: 6,
+    networkMembers: { active: 2, inactive: 1, total: 3 },
+    flags: [],
+    lastUpdated: new Date('2025-10-19').toISOString(),
+    genogramData: null,
+    createdAt: new Date('2025-07-20').toISOString()
   }
-} else {
-  console.log('📝 No existing cases found, initializing with sample data');
-
-  // Initialize with sample cases
-  casesStore = [
-    {
-      _id: 'CASE-001',
-      caseId: 'CASE-CASE-001',
-      childName: 'Child case-001',
-      priority: 'low',
-      status: 'active',
-      networkHealth: 8,
-      networkMembers: { active: 13, inactive: 4, total: 17 },
-      flags: [],
-      lastUpdated: new Date('2025-10-20').toISOString(),
-      genogramData: null,
-      createdAt: new Date('2025-10-01').toISOString()
-    },
-    {
-      _id: 'CASE-002',
-      caseId: 'CASE-CASE-002',
-      childName: 'Marcus Johnson',
-      priority: 'low',
-      status: 'active',
-      networkHealth: 10,
-      networkMembers: { active: 3, inactive: 0, total: 3 },
-      flags: [],
-      lastUpdated: new Date('2025-10-19').toISOString(),
-      genogramData: null,
-      createdAt: new Date('2025-09-15').toISOString()
-    },
-    {
-      _id: 'CASE-003',
-      caseId: 'CASE-CASE-003',
-      childName: 'Sofia Rodriguez',
-      priority: 'high',
-      status: 'active',
-      networkHealth: 3,
-      networkMembers: { active: 1, inactive: 2, total: 3 },
-      flags: ['low health', 'inactive member', 'no placement option'],
-      lastUpdated: new Date('2025-10-19').toISOString(),
-      genogramData: null,
-      createdAt: new Date('2025-08-10').toISOString()
-    },
-    {
-      _id: 'CASE-004',
-      caseId: 'CASE-CASE-004',
-      childName: 'Tyler Bennett',
-      priority: 'medium',
-      status: 'active',
-      networkHealth: 6,
-      networkMembers: { active: 2, inactive: 1, total: 3 },
-      flags: [],
-      lastUpdated: new Date('2025-10-19').toISOString(),
-      genogramData: null,
-      createdAt: new Date('2025-07-20').toISOString()
-    }
-  ];
-
-  saveToFile();
-}
-
-// Helper to save data to file
-function saveToFile() {
-  try {
-    fs.writeFileSync(CASES_FILE, JSON.stringify(casesStore, null, 2));
-  } catch (error) {
-    console.error('Error saving cases to file:', error);
-  }
-}
+];
 
 // Calculate priority based on health and flags
 function calculatePriority(caseData) {
   const { networkHealth = 5, flags = [] } = caseData;
-
   if (flags.some(f => ['inactive member', 'low health', 'no placement option'].includes(f))) {
     return 'high';
   }
-
   if (networkHealth <= 3) return 'high';
   if (networkHealth <= 6 || flags.length > 0) return 'medium';
   return 'low';
@@ -126,6 +86,8 @@ app.http('casesCollection', {
     }
 
     try {
+      const cases = await getCollection('cases');
+
       if (request.method === 'GET') {
         const url = new URL(request.url);
         const priority = url.searchParams.get('priority');
@@ -133,48 +95,44 @@ app.http('casesCollection', {
         const search = url.searchParams.get('search');
         const hasFlags = url.searchParams.get('hasFlags');
 
-        let filtered = [...casesStore];
+        const query = {};
+        if (priority && priority !== 'all') query.priority = priority;
+        if (status && status !== 'all') query.status = status;
+        if (hasFlags === 'true') query['flags.0'] = { $exists: true };
 
-        // Apply filters
-        if (priority && priority !== 'all') {
-          filtered = filtered.filter(c => c.priority === priority);
+        let data = await cases.find(query).toArray();
+
+        // Initialize with sample data if empty
+        if (data.length === 0 && !priority && !status && !hasFlags && !search) {
+          for (const sample of SAMPLE_CASES) {
+            await cases.insertOne(sample);
+          }
+          data = SAMPLE_CASES;
         }
 
-        if (status && status !== 'all') {
-          filtered = filtered.filter(c => c.status === status);
-        }
-
-        if (hasFlags === 'true') {
-          filtered = filtered.filter(c => c.flags && c.flags.length > 0);
-        }
-
+        // Apply search filter
         if (search) {
           const searchLower = search.toLowerCase();
-          filtered = filtered.filter(c =>
+          data = data.filter(c =>
             c.childName.toLowerCase().includes(searchLower) ||
             c.caseId.toLowerCase().includes(searchLower)
           );
         }
 
-        // Sort by priority (high > medium > low) then by last updated
+        // Sort by priority then by last updated
         const priorityOrder = { high: 3, medium: 2, low: 1 };
-        filtered.sort((a, b) => {
-          const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
+        data.sort((a, b) => {
+          const priorityDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
           if (priorityDiff !== 0) return priorityDiff;
           return new Date(b.lastUpdated) - new Date(a.lastUpdated);
         });
 
-        return {
-          status: 200,
-          headers,
-          body: JSON.stringify(filtered)
-        };
+        return { status: 200, headers, body: JSON.stringify(data) };
       } else {
         // POST create
         const body = await request.json();
-
         const newCase = {
-          _id: `CASE-${Date.now()}`,
+          _id: generateId('case'),
           caseId: body.caseId || `CASE-${Date.now()}`,
           childName: body.childName,
           priority: body.priority || calculatePriority(body),
@@ -187,24 +145,13 @@ app.http('casesCollection', {
           createdAt: new Date().toISOString()
         };
 
-        casesStore.push(newCase);
-        saveToFile();
-
-        context.log(`✅ Created case: ${newCase.caseId}`);
-
-        return {
-          status: 201,
-          headers,
-          body: JSON.stringify(newCase)
-        };
+        await cases.insertOne(newCase);
+        context.log(`Created case: ${newCase.caseId}`);
+        return { status: 201, headers, body: JSON.stringify(newCase) };
       }
     } catch (error) {
       context.error('Error in cases collection:', error);
-      return {
-        status: 500,
-        headers,
-        body: JSON.stringify({ success: false, error: error.message })
-      };
+      return { status: 500, headers, body: JSON.stringify({ success: false, error: error.message }) };
     }
   }
 });
@@ -222,85 +169,47 @@ app.http('casesItem', {
     const id = request.params.id;
 
     try {
+      const cases = await getCollection('cases');
+
       if (request.method === 'GET') {
-        const caseItem = casesStore.find(c => c._id === id || c.caseId === id);
-
+        const caseItem = await cases.findOne({ $or: [{ _id: id }, { caseId: id }] });
         if (!caseItem) {
-          return {
-            status: 404,
-            headers,
-            body: JSON.stringify({ success: false, error: 'Case not found' })
-          };
+          return { status: 404, headers, body: JSON.stringify({ success: false, error: 'Case not found' }) };
         }
-
-        return {
-          status: 200,
-          headers,
-          body: JSON.stringify(caseItem)
-        };
+        return { status: 200, headers, body: JSON.stringify(caseItem) };
       } else if (request.method === 'PATCH') {
         const updates = await request.json();
-        const index = casesStore.findIndex(c => c._id === id || c.caseId === id);
-
-        if (index === -1) {
-          return {
-            status: 404,
-            headers,
-            body: JSON.stringify({ success: false, error: 'Case not found' })
-          };
-        }
-
-        // Apply updates
-        casesStore[index] = {
-          ...casesStore[index],
-          ...updates,
-          lastUpdated: new Date().toISOString()
-        };
+        updates.lastUpdated = new Date().toISOString();
 
         // Recalculate priority if health or flags changed
         if (updates.networkHealth !== undefined || updates.flags !== undefined) {
-          casesStore[index].priority = calculatePriority(casesStore[index]);
+          const existing = await cases.findOne({ $or: [{ _id: id }, { caseId: id }] });
+          if (existing) {
+            const merged = { ...existing, ...updates };
+            updates.priority = calculatePriority(merged);
+          }
         }
 
-        saveToFile();
+        const result = await cases.updateOne({ $or: [{ _id: id }, { caseId: id }] }, { $set: updates });
+        if (result.modifiedCount === 0) {
+          return { status: 404, headers, body: JSON.stringify({ success: false, error: 'Case not found' }) };
+        }
 
-        context.log(`✅ Updated case: ${casesStore[index].caseId}`);
-
-        return {
-          status: 200,
-          headers,
-          body: JSON.stringify(casesStore[index])
-        };
+        const updated = await cases.findOne({ $or: [{ _id: id }, { caseId: id }] });
+        context.log(`Updated case: ${id}`);
+        return { status: 200, headers, body: JSON.stringify(updated) };
       } else {
         // DELETE
-        const index = casesStore.findIndex(c => c._id === id || c.caseId === id);
-
-        if (index === -1) {
-          return {
-            status: 404,
-            headers,
-            body: JSON.stringify({ success: false, error: 'Case not found' })
-          };
+        const result = await cases.deleteOne({ $or: [{ _id: id }, { caseId: id }] });
+        if (result.deletedCount === 0) {
+          return { status: 404, headers, body: JSON.stringify({ success: false, error: 'Case not found' }) };
         }
-
-        const deleted = casesStore.splice(index, 1)[0];
-        saveToFile();
-
-        context.log(`🗑️ Deleted case: ${deleted.caseId}`);
-
-        return {
-          status: 200,
-          headers,
-          body: JSON.stringify({ success: true, deleted })
-        };
+        context.log(`Deleted case: ${id}`);
+        return { status: 200, headers, body: JSON.stringify({ success: true }) };
       }
     } catch (error) {
       context.error('Error in cases item:', error);
-      return {
-        status: 500,
-        headers,
-        body: JSON.stringify({ success: false, error: error.message })
-      };
+      return { status: 500, headers, body: JSON.stringify({ success: false, error: error.message }) };
     }
   }
 });
@@ -316,36 +225,31 @@ app.http('casesStats', {
     }
 
     try {
+      const cases = await getCollection('cases');
+      const all = await cases.find({}).toArray();
+
       const stats = {
-        total: casesStore.length,
+        total: all.length,
         byPriority: {
-          high: casesStore.filter(c => c.priority === 'high').length,
-          medium: casesStore.filter(c => c.priority === 'medium').length,
-          low: casesStore.filter(c => c.priority === 'low').length
+          high: all.filter(c => c.priority === 'high').length,
+          medium: all.filter(c => c.priority === 'medium').length,
+          low: all.filter(c => c.priority === 'low').length
         },
         byStatus: {
-          active: casesStore.filter(c => c.status === 'active').length,
-          inactive: casesStore.filter(c => c.status === 'inactive').length,
-          closed: casesStore.filter(c => c.status === 'closed').length
+          active: all.filter(c => c.status === 'active').length,
+          inactive: all.filter(c => c.status === 'inactive').length,
+          closed: all.filter(c => c.status === 'closed').length
         },
-        withFlags: casesStore.filter(c => c.flags && c.flags.length > 0).length,
-        avgNetworkHealth: casesStore.length > 0
-          ? (casesStore.reduce((sum, c) => sum + (c.networkHealth || 0), 0) / casesStore.length).toFixed(1)
+        withFlags: all.filter(c => c.flags && c.flags.length > 0).length,
+        avgNetworkHealth: all.length > 0
+          ? (all.reduce((sum, c) => sum + (c.networkHealth || 0), 0) / all.length).toFixed(1)
           : 0
       };
 
-      return {
-        status: 200,
-        headers,
-        body: JSON.stringify(stats)
-      };
+      return { status: 200, headers, body: JSON.stringify(stats) };
     } catch (error) {
       context.error('Error calculating stats:', error);
-      return {
-        status: 500,
-        headers,
-        body: JSON.stringify({ success: false, error: error.message })
-      };
+      return { status: 500, headers, body: JSON.stringify({ success: false, error: error.message }) };
     }
   }
 });
