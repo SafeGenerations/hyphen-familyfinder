@@ -1,0 +1,15 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/static/*", "/api/*", "*.ico", "*.png", "*.jpg", "*.svg", "*.json", "*.js", "*.css"]
+  },
+  "routes": [
+    {
+      "route": "/api/*",
+      "allowedRoles": ["anonymous"]
+    }
+  ],
+  "platform": {
+    "apiRuntime": "node:18"
+  }
+}
