@@ -1,0 +1,712 @@
+{
+  "version": "2.0",
+  "metadata": {
+    "created": "2025-10-20T12:00:00.000Z",
+    "modified": "2025-10-20T12:00:00.000Z",
+    "author": "Demo",
+    "description": "Comprehensive demo family showing all features"
+  },
+  "people": [
+    {
+      "id": "grandpa-james",
+      "x": 200,
+      "y": 100,
+      "zIndex": 0,
+      "name": "James Wilson",
+      "firstName": "James",
+      "lastName": "Wilson",
+      "gender": "male",
+      "dateOfBirth": "1945-03-15",
+      "dateOfDeath": "2018-11-22",
+      "age": 73,
+      "isDeceased": true,
+      "deceasedSymbol": "cross",
+      "shape": "square",
+      "color": "#3b82f6",
+      "size": 40,
+      "caseNotes": "Patriarch of the Wilson family. Veteran. Passed peacefully.",
+      "tags": ["deceased"],
+      "contacts": []
+    },
+    {
+      "id": "grandma-mary",
+      "x": 340,
+      "y": 100,
+      "zIndex": 0,
+      "name": "Mary Wilson",
+      "firstName": "Mary",
+      "lastName": "Wilson",
+      "maidenName": "Thompson",
+      "gender": "female",
+      "dateOfBirth": "1948-07-22",
+      "age": 77,
+      "isDeceased": false,
+      "shape": "circle",
+      "color": "#ec4899",
+      "size": 40,
+      "caseNotes": "Family matriarch. Primary caregiver for grandchildren. Lives in assisted living.",
+      "tags": ["primary-caregiver"],
+      "contacts": [
+        {
+          "id": "contact-1",
+          "personId": "grandma-mary",
+          "date": "2025-10-15T14:30:00.000Z",
+          "type": "phone",
+          "duration": 45,
+          "notes": "Weekly check-in call. Mary is doing well, attending activities at facility.",
+          "outcome": "positive",
+          "followUpNeeded": false
+        },
+        {
+          "id": "contact-2",
+          "personId": "grandma-mary",
+          "date": "2025-10-08T10:00:00.000Z",
+          "type": "in-person",
+          "duration": 120,
+          "notes": "Visit to assisted living. Discussed upcoming holiday plans with grandchildren.",
+          "outcome": "positive",
+          "followUpNeeded": true,
+          "nextContactDate": "2025-10-22"
+        }
+      ]
+    },
+    {
+      "id": "dad-robert",
+      "x": 150,
+      "y": 250,
+      "zIndex": 0,
+      "name": "Robert Wilson",
+      "firstName": "Robert",
+      "lastName": "Wilson",
+      "gender": "male",
+      "dateOfBirth": "1975-05-10",
+      "age": 50,
+      "isDeceased": false,
+      "shape": "square",
+      "color": "#3b82f6",
+      "size": 35,
+      "caseNotes": "Works as construction foreman. Recovering from substance abuse. 18 months sober. Active in AA.",
+      "caseStatus": "active-services",
+      "tags": ["substance-abuse-history", "employed"],
+      "contacts": [
+        {
+          "id": "contact-3",
+          "personId": "dad-robert",
+          "date": "2025-10-18T09:00:00.000Z",
+          "type": "in-person",
+          "duration": 60,
+          "notes": "Monthly case review. Robert maintains sobriety, working full-time. Relationship with children improving.",
+          "outcome": "positive",
+          "followUpNeeded": true,
+          "nextContactDate": "2025-11-18"
+        }
+      ]
+    },
+    {
+      "id": "mom-jennifer",
+      "x": 290,
+      "y": 250,
+      "zIndex": 0,
+      "name": "Jennifer Wilson",
+      "firstName": "Jennifer",
+      "lastName": "Wilson",
+      "maidenName": "Davis",
+      "gender": "female",
+      "dateOfBirth": "1978-09-14",
+      "age": 47,
+      "isDeceased": false,
+      "shape": "circle",
+      "color": "#ec4899",
+      "size": 35,
+      "caseNotes": "Diagnosed with bipolar disorder. Inconsistent with medication compliance. Currently stable on new treatment plan.",
+      "caseStatus": "active-services",
+      "tags": ["mental-health", "medication-management"],
+      "contacts": [
+        {
+          "id": "contact-4",
+          "personId": "mom-jennifer",
+          "date": "2025-10-16T15:00:00.000Z",
+          "type": "phone",
+          "duration": 30,
+          "notes": "Check-in regarding medication. Jennifer reports feeling stable, no missed doses this week.",
+          "outcome": "positive",
+          "followUpNeeded": true,
+          "nextContactDate": "2025-10-23"
+        }
+      ]
+    },
+    {
+      "id": "uncle-david",
+      "x": 390,
+      "y": 250,
+      "zIndex": 0,
+      "name": "David Wilson",
+      "firstName": "David",
+      "lastName": "Wilson",
+      "gender": "male",
+      "dateOfBirth": "1980-12-03",
+      "age": 44,
+      "isDeceased": false,
+      "shape": "square",
+      "color": "#3b82f6",
+      "size": 35,
+      "caseNotes": "Teacher. Married with two children. Potential kinship placement resource.",
+      "tags": ["kinship-resource", "employed", "stable-housing"],
+      "contacts": []
+    },
+    {
+      "id": "aunt-sarah",
+      "x": 530,
+      "y": 250,
+      "zIndex": 0,
+      "name": "Sarah Wilson",
+      "firstName": "Sarah",
+      "lastName": "Wilson",
+      "maidenName": "Martinez",
+      "gender": "female",
+      "dateOfBirth": "1982-06-18",
+      "age": 43,
+      "isDeceased": false,
+      "shape": "circle",
+      "color": "#ec4899",
+      "size": 35,
+      "caseNotes": "Nurse practitioner. Strong advocate for family preservation. Kinship placement resource.",
+      "tags": ["kinship-resource", "employed", "medical-professional"],
+      "contacts": [
+        {
+          "id": "contact-5",
+          "personId": "aunt-sarah",
+          "date": "2025-10-12T11:00:00.000Z",
+          "type": "email",
+          "duration": 15,
+          "notes": "Follow-up on kinship home study. Sarah completed all paperwork, home visit scheduled for next week.",
+          "outcome": "positive",
+          "followUpNeeded": true,
+          "nextContactDate": "2025-10-19"
+        }
+      ]
+    },
+    {
+      "id": "child-emily",
+      "x": 100,
+      "y": 400,
+      "zIndex": 0,
+      "name": "Emily Wilson",
+      "firstName": "Emily",
+      "lastName": "Wilson",
+      "gender": "female",
+      "dateOfBirth": "2010-03-22",
+      "age": 15,
+      "isDeceased": false,
+      "shape": "circle",
+      "color": "#ec4899",
+      "size": 30,
+      "caseNotes": "High school sophomore. Excellent student despite family challenges. Currently in therapeutic foster care. Working toward reunification.",
+      "caseStatus": "in-placement",
+      "tags": ["foster-care", "honors-student", "therapy"],
+      "currentPlacement": "placement-emily-foster",
+      "placementHistory": ["placement-emily-foster"],
+      "contacts": [
+        {
+          "id": "contact-6",
+          "personId": "child-emily",
+          "date": "2025-10-17T16:00:00.000Z",
+          "type": "in-person",
+          "duration": 90,
+          "notes": "Weekly therapy session. Emily expressing desire to return home. Discussed healthy boundaries and coping strategies.",
+          "outcome": "positive",
+          "followUpNeeded": true,
+          "nextContactDate": "2025-10-24"
+        },
+        {
+          "id": "contact-7",
+          "personId": "child-emily",
+          "date": "2025-10-14T17:30:00.000Z",
+          "type": "in-person",
+          "duration": 120,
+          "notes": "Supervised visit with parents. Emily engaged well. Parents appropriate. Next visit can be unsupervised.",
+          "outcome": "positive",
+          "followUpNeeded": true,
+          "nextContactDate": "2025-10-21"
+        }
+      ]
+    },
+    {
+      "id": "child-michael",
+      "x": 220,
+      "y": 400,
+      "zIndex": 0,
+      "name": "Michael Wilson",
+      "firstName": "Michael",
+      "lastName": "Wilson",
+      "gender": "male",
+      "dateOfBirth": "2012-08-05",
+      "age": 13,
+      "isDeceased": false,
+      "shape": "square",
+      "color": "#3b82f6",
+      "size": 30,
+      "caseNotes": "7th grader. ADHD diagnosis. Struggles with impulse control. In same foster home as sister Emily. Responds well to structure.",
+      "caseStatus": "in-placement",
+      "tags": ["foster-care", "adhd", "therapy", "medication-management"],
+      "currentPlacement": "placement-emily-foster",
+      "placementHistory": ["placement-emily-foster"],
+      "contacts": [
+        {
+          "id": "contact-8",
+          "personId": "child-michael",
+          "date": "2025-10-17T14:30:00.000Z",
+          "type": "in-person",
+          "duration": 60,
+          "notes": "School meeting - IEP review. Michael's behavior improving with new med regimen. Teachers report better focus.",
+          "outcome": "positive",
+          "followUpNeeded": true,
+          "nextContactDate": "2025-11-17"
+        }
+      ]
+    },
+    {
+      "id": "child-sophia",
+      "x": 340,
+      "y": 400,
+      "zIndex": 0,
+      "name": "Sophia Wilson",
+      "firstName": "Sophia",
+      "lastName": "Wilson",
+      "gender": "female",
+      "dateOfBirth": "2016-11-12",
+      "age": 8,
+      "isDeceased": false,
+      "shape": "circle",
+      "color": "#ec4899",
+      "size": 30,
+      "caseNotes": "3rd grader. Sweet, quiet child. Currently in kinship care with uncle David and aunt Sarah. Thriving in stable environment.",
+      "caseStatus": "kinship-care",
+      "tags": ["kinship-care", "stable", "school-age"],
+      "currentPlacement": "placement-sophia-kinship",
+      "placementHistory": ["placement-sophia-kinship"],
+      "contacts": [
+        {
+          "id": "contact-9",
+          "personId": "child-sophia",
+          "date": "2025-10-13T13:00:00.000Z",
+          "type": "in-person",
+          "duration": 45,
+          "notes": "Home visit. Sophia appears happy and well-adjusted. Bonding well with cousins. No concerns.",
+          "outcome": "positive",
+          "followUpNeeded": true,
+          "nextContactDate": "2025-11-13"
+        }
+      ]
+    },
+    {
+      "id": "cousin-olivia",
+      "x": 440,
+      "y": 400,
+      "zIndex": 0,
+      "name": "Olivia Wilson",
+      "firstName": "Olivia",
+      "lastName": "Wilson",
+      "gender": "female",
+      "dateOfBirth": "2014-04-08",
+      "age": 11,
+      "isDeceased": false,
+      "shape": "circle",
+      "color": "#ec4899",
+      "size": 25,
+      "caseNotes": "David and Sarah's daughter. Helps Sophia adjust to household. Good role model.",
+      "tags": ["stable", "school-age"],
+      "contacts": []
+    },
+    {
+      "id": "cousin-noah",
+      "x": 540,
+      "y": 400,
+      "zIndex": 0,
+      "name": "Noah Wilson",
+      "firstName": "Noah",
+      "lastName": "Wilson",
+      "gender": "male",
+      "dateOfBirth": "2017-09-25",
+      "age": 8,
+      "isDeceased": false,
+      "shape": "square",
+      "color": "#3b82f6",
+      "size": 25,
+      "caseNotes": "David and Sarah's son. Same age as Sophia, attends same school. Built-in friend for Sophia.",
+      "tags": ["stable", "school-age"],
+      "contacts": []
+    },
+    {
+      "id": "foster-parent-karen",
+      "x": 160,
+      "y": 520,
+      "zIndex": 0,
+      "name": "Karen Thompson",
+      "firstName": "Karen",
+      "lastName": "Thompson",
+      "gender": "female",
+      "dateOfBirth": "1970-02-14",
+      "age": 55,
+      "isDeceased": false,
+      "shape": "circle",
+      "color": "#8b5cf6",
+      "size": 30,
+      "icon": "home",
+      "showBadge": true,
+      "caseNotes": "Licensed therapeutic foster parent. 15 years experience. Specialized in trauma-informed care. Currently fostering Emily and Michael.",
+      "tags": ["foster-parent", "experienced", "therapeutic"],
+      "contacts": [
+        {
+          "id": "contact-10",
+          "personId": "foster-parent-karen",
+          "date": "2025-10-19T10:00:00.000Z",
+          "type": "phone",
+          "duration": 20,
+          "notes": "Weekly check-in. Karen reports both children doing well. Emily helping with homework. Michael's behavior improved.",
+          "outcome": "positive",
+          "followUpNeeded": false
+        }
+      ]
+    },
+    {
+      "id": "caseworker",
+      "x": 680,
+      "y": 250,
+      "zIndex": 0,
+      "name": "Jessica Rodriguez",
+      "firstName": "Jessica",
+      "lastName": "Rodriguez",
+      "gender": "female",
+      "dateOfBirth": "1985-11-30",
+      "age": 39,
+      "isDeceased": false,
+      "shape": "diamond",
+      "color": "#10b981",
+      "size": 35,
+      "icon": "briefcase",
+      "showBadge": true,
+      "caseNotes": "Assigned caseworker for Wilson family. 12 years experience in child welfare. Focused on family preservation and reunification.",
+      "tags": ["caseworker", "professional"],
+      "contacts": []
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel-grandparents",
+      "from": "grandpa-james",
+      "to": "grandma-mary",
+      "type": "married",
+      "status": "ended",
+      "startDate": "1968-06-15",
+      "endDate": "2018-11-22",
+      "children": ["dad-robert", "uncle-david"],
+      "childOrder": {
+        "dad-robert": 0,
+        "uncle-david": 1
+      },
+      "showBadge": true,
+      "notes": "Married 50 years until James's passing."
+    },
+    {
+      "id": "rel-parents",
+      "from": "dad-robert",
+      "to": "mom-jennifer",
+      "type": "divorced",
+      "status": "ended",
+      "startDate": "2005-08-20",
+      "endDate": "2020-03-15",
+      "children": ["child-emily", "child-michael", "child-sophia"],
+      "childOrder": {
+        "child-emily": 0,
+        "child-michael": 1,
+        "child-sophia": 2
+      },
+      "showBadge": true,
+      "notes": "Divorced due to Robert's substance abuse and Jennifer's mental health challenges. Co-parenting with support."
+    },
+    {
+      "id": "rel-uncle-aunt",
+      "from": "uncle-david",
+      "to": "aunt-sarah",
+      "type": "married",
+      "status": "active",
+      "startDate": "2010-07-10",
+      "children": ["cousin-olivia", "cousin-noah"],
+      "childOrder": {
+        "cousin-olivia": 0,
+        "cousin-noah": 1
+      },
+      "showBadge": true,
+      "notes": "Stable marriage. Approved kinship placement for Sophia."
+    }
+  ],
+  "households": [
+    {
+      "id": "household-foster",
+      "name": "Thompson Foster Home",
+      "zIndex": 0,
+      "points": [
+        {"x": 40, "y": 350},
+        {"x": 280, "y": 350},
+        {"x": 280, "y": 560},
+        {"x": 40, "y": 560}
+      ],
+      "borderStyle": "curved",
+      "smoothness": 0.25,
+      "color": "#8b5cf6",
+      "labelColor": "#8b5cf6",
+      "labelPosition": "top",
+      "members": ["child-emily", "child-michael", "foster-parent-karen"],
+      "notes": "Therapeutic foster home. Licensed for up to 4 children. Currently housing Emily and Michael Wilson."
+    },
+    {
+      "id": "household-kinship",
+      "name": "Wilson-Martinez Family Home",
+      "zIndex": 0,
+      "points": [
+        {"x": 370, "y": 350},
+        {"x": 610, "y": 350},
+        {"x": 610, "y": 450},
+        {"x": 370, "y": 450}
+      ],
+      "borderStyle": "curved",
+      "smoothness": 0.25,
+      "color": "#10b981",
+      "labelColor": "#10b981",
+      "labelPosition": "top",
+      "members": ["child-sophia", "cousin-olivia", "cousin-noah"],
+      "notes": "Kinship placement. David and Sarah's home. Approved for Sophia's placement in August 2024."
+    },
+    {
+      "id": "household-assisted-living",
+      "name": "Grandma Mary's Residence",
+      "zIndex": 0,
+      "points": [
+        {"x": 300, "y": 60},
+        {"x": 380, "y": 60},
+        {"x": 380, "y": 140},
+        {"x": 300, "y": 140}
+      ],
+      "borderStyle": "straight",
+      "smoothness": 0,
+      "color": "#f59e0b",
+      "labelColor": "#f59e0b",
+      "labelPosition": "bottom",
+      "members": ["grandma-mary"],
+      "notes": "Sunnyvale Assisted Living. Mary moved here in 2019 after James's death."
+    }
+  ],
+  "textBoxes": [
+    {
+      "id": "textbox-case-summary",
+      "x": 650,
+      "y": 80,
+      "zIndex": 1,
+      "text": "CASE SUMMARY:\nWilson Family\nCase #: 2024-WF-1234\nOpen: 03/2024\nGoal: Reunification",
+      "fontSize": 13,
+      "color": "#1f2937",
+      "backgroundColor": "#fef3c7",
+      "width": 200,
+      "height": 100
+    },
+    {
+      "id": "textbox-reunification-plan",
+      "x": 40,
+      "y": 580,
+      "zIndex": 1,
+      "text": "REUNIFICATION TIMELINE:\n☑ Parents complete parenting classes\n☑ Robert: 18 months sobriety\n☐ Jennifer: 6 months med compliance\n☐ Home safety assessment\nTarget: Spring 2026",
+      "fontSize": 12,
+      "color": "#065f46",
+      "backgroundColor": "#d1fae5",
+      "width": 240,
+      "height": 120
+    },
+    {
+      "id": "textbox-kinship-notes",
+      "x": 370,
+      "y": 470,
+      "zIndex": 1,
+      "text": "Kinship Placement Success:\nSophia thriving with uncle's family\nSame school as cousins\nRegular parent visits\nPermanency: Potential guardianship",
+      "fontSize": 12,
+      "color": "#065f46",
+      "backgroundColor": "#d1fae5",
+      "width": 240,
+      "height": 100
+    },
+    {
+      "id": "textbox-key",
+      "x": 650,
+      "y": 400,
+      "zIndex": 1,
+      "text": "KEY:\n▢ Male\n● Female\n◆ Professional\n† Deceased\n━━ Married\n╱╱ Divorced",
+      "fontSize": 12,
+      "color": "#374151",
+      "backgroundColor": "#f3f4f6",
+      "width": 180,
+      "height": 110
+    }
+  ],
+  "placements": [
+    {
+      "id": "placement-emily-foster",
+      "personId": "child-emily",
+      "type": "foster",
+      "address": "1234 Oak Street",
+      "city": "Springfield",
+      "state": "IL",
+      "startDate": "2024-03-15",
+      "providerName": "Karen Thompson",
+      "providerContact": "555-0123",
+      "notes": "Therapeutic foster placement. Emily and Michael placed together to maintain sibling bond.",
+      "isActive": true,
+      "reason": "Parent substance abuse and mental health crisis"
+    },
+    {
+      "id": "placement-sophia-kinship",
+      "personId": "child-sophia",
+      "type": "kinship",
+      "address": "5678 Maple Avenue",
+      "city": "Springfield",
+      "state": "IL",
+      "startDate": "2024-08-01",
+      "providerName": "David and Sarah Wilson",
+      "providerContact": "555-0456",
+      "notes": "Kinship placement with paternal uncle. Sophia doing exceptionally well. Considering guardianship.",
+      "isActive": true,
+      "reason": "Parent unable to care for all three children during crisis period"
+    }
+  ],
+  "customAttributes": {
+    "caseNumber": "2024-WF-1234",
+    "county": "Sangamon County",
+    "court": "Circuit Court",
+    "judge": "Hon. Patricia Anderson",
+    "nextCourtDate": "2025-11-15",
+    "caseGoal": "Reunification",
+    "targetDate": "2026-03-15"
+  },
+  "tagDefinitions": [
+    {
+      "id": "deceased",
+      "name": "Deceased",
+      "color": "#6b7280",
+      "category": "status",
+      "description": "Person is deceased"
+    },
+    {
+      "id": "primary-caregiver",
+      "name": "Primary Caregiver",
+      "color": "#8b5cf6",
+      "category": "role",
+      "description": "Primary caregiver for children"
+    },
+    {
+      "id": "substance-abuse-history",
+      "name": "Substance Abuse History",
+      "color": "#ef4444",
+      "category": "concern",
+      "description": "History of substance abuse"
+    },
+    {
+      "id": "mental-health",
+      "name": "Mental Health",
+      "color": "#f59e0b",
+      "category": "concern",
+      "description": "Mental health diagnosis or concern"
+    },
+    {
+      "id": "kinship-resource",
+      "name": "Kinship Resource",
+      "color": "#10b981",
+      "category": "resource",
+      "description": "Approved kinship placement resource"
+    },
+    {
+      "id": "foster-care",
+      "name": "In Foster Care",
+      "color": "#8b5cf6",
+      "category": "placement",
+      "description": "Child currently in foster care"
+    },
+    {
+      "id": "kinship-care",
+      "name": "In Kinship Care",
+      "color": "#10b981",
+      "category": "placement",
+      "description": "Child in kinship placement"
+    },
+    {
+      "id": "employed",
+      "name": "Employed",
+      "color": "#3b82f6",
+      "category": "strength",
+      "description": "Currently employed"
+    },
+    {
+      "id": "stable-housing",
+      "name": "Stable Housing",
+      "color": "#10b981",
+      "category": "strength",
+      "description": "Has stable housing"
+    },
+    {
+      "id": "therapy",
+      "name": "In Therapy",
+      "color": "#06b6d4",
+      "category": "service",
+      "description": "Currently receiving therapy services"
+    },
+    {
+      "id": "medication-management",
+      "name": "Medication Management",
+      "color": "#ec4899",
+      "category": "service",
+      "description": "Requires medication management"
+    },
+    {
+      "id": "foster-parent",
+      "name": "Foster Parent",
+      "color": "#8b5cf6",
+      "category": "role",
+      "description": "Licensed foster parent"
+    },
+    {
+      "id": "caseworker",
+      "name": "Caseworker",
+      "color": "#10b981",
+      "category": "professional",
+      "description": "Case management professional"
+    }
+  ],
+  "filterTemplates": [
+    {
+      "id": "template-children-in-care",
+      "name": "Children in Placement",
+      "description": "Show only children currently in foster or kinship care",
+      "filters": {
+        "tags": ["foster-care", "kinship-care"]
+      },
+      "usageCount": 5
+    },
+    {
+      "id": "template-adults-concerns",
+      "name": "Adults with Concerns",
+      "description": "Parents and caregivers with active concerns",
+      "filters": {
+        "tags": ["substance-abuse-history", "mental-health"]
+      },
+      "usageCount": 3
+    },
+    {
+      "id": "template-resources",
+      "name": "Family Resources",
+      "description": "Family members who are potential placement resources",
+      "filters": {
+        "tags": ["kinship-resource", "stable-housing", "employed"]
+      },
+      "usageCount": 2
+    }
+  ],
+  "searchHistory": []
+}

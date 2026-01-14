@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Azure Functions
+local.settings.json
+bin/
+obj/
+
+# Development data storage
+.dev-data/
+*.json
+
+# Logs
+*.log

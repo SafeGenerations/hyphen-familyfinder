@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Genogram Embed Test - Security Fixed</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .info-box {
+      background: #d1fae5;
+      border: 1px solid #10b981;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      color: #065f46;
+    }
+    .info-box h3 {
+      margin-top: 0;
+      color: #047857;
+    }
+    .info-box code {
+      background: #ecfdf5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      background-color: #2563eb;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #1d4ed8;
+    }
+    button.secondary {
+      background-color: #6b7280;
+    }
+    button.secondary:hover {
+      background-color: #4b5563;
+    }
+    button.success {
+      background-color: #10b981;
+    }
+    button.success:hover {
+      background-color: #059669;
+    }
+    .iframe-container {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      overflow: hidden;
+      height: 600px;
+      position: relative;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .output {
+      background: #1f2937;
+      color: #f3f4f6;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 15px;
+    }
+    .status {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    .status.ready {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+    .status.loading {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+    .log-entry {
+      margin-bottom: 5px;
+      padding: 5px;
+      border-left: 3px solid transparent;
+    }
+    .log-entry.info {
+      border-color: #3b82f6;
+    }
+    .log-entry.success {
+      border-color: #10b981;
+    }
+    .log-entry.error {
+      border-color: #ef4444;
+    }
+    .log-entry.warning {
+      border-color: #f59e0b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Genogram Builder - Cross-Origin Security Fixed</h1>
+    
+    <div class="info-box">
+      <h3>✅ Security Issues Resolved</h3>
+      <p>This test demonstrates how the genogram app now handles cross-origin security restrictions:</p>
+      <ul>
+        <li><strong>File Picker API</strong> - Now uses <code>postMessage</code> instead of <code>window.showSaveFilePicker</code></li>
+        <li><strong>Clipboard API</strong> - Disabled in embedded mode, no longer attempts <code>navigator.clipboard</code></li>
+        <li><strong>Save/Export</strong> - All operations now communicate via <code>postMessage</code> to parent window</li>
+      </ul>
+    </div>
+    
+    <div class="controls">
+      <div class="status loading" id="status">
+        Loading genogram...
+      </div>
+      
+      <h3>Test the Fixed Integration</h3>
+      <div class="button-group">
+        <button onclick="loadSampleData()">Load Sample Data</button>
+        <button class="success" onclick="testSaveOperation()">Test Save (No Error)</button>
+        <button class="success" onclick="testExportOperation()">Test Export (No Error)</button>
+        <button onclick="clearData()">Clear Genogram</button>
+      </div>
+      
+      <h3>Console Output</h3>
+      <div id="output" class="output">Waiting for messages...</div>
+    </div>
+    
+    <div class="iframe-container">
+      <iframe 
+        id="genogramFrame" 
+        src="http://localhost:3000?embed=true"
+        allow="clipboard-write"
+      ></iframe>
+    </div>
+  </div>
+
+  <script>
+    const output = document.getElementById('output');
+    const status = document.getElementById('status');
+    const iframe = document.getElementById('genogramFrame');
+    let isReady = false;
+    
+    // Enhanced logging
+    function log(message, data = null, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      
+      if (data) {
+        entry.innerHTML = `<strong>[${timestamp}]</strong> ${message}<br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+      } else {
+        entry.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+      }
+      
+      output.insertBefore(entry, output.firstChild);
+      
+      // Keep only last 20 entries
+      while (output.children.length > 20) {
+        output.removeChild(output.lastChild);
+      }
+    }
+    
+    // Listen for messages from iframe
+    window.addEventListener('message', (event) => {
+      // In production, check event.origin
+      const { type, data } = event.data || {};
+      
+      switch (type) {
+        case 'GENOGRAM_READY':
+          isReady = true;
+          status.textContent = '✅ Genogram ready! No security errors.';
+          status.className = 'status ready';
+          log('Genogram initialized successfully', event.data, 'success');
+          break;
+          
+        case 'genogram-ready':
+          // Alternative ready signal
+          isReady = true;
+          status.textContent = '✅ Genogram ready! No security errors.';
+          status.className = 'status ready';
+          log('Genogram ready (alternative signal)', null, 'success');
+          break;
+          
+        case 'GENOGRAM_SAVE':
+          log('✅ Save successful via postMessage (no file picker error)', data, 'success');
+          // Here you would save the data to your backend
+          alert('Save successful! Data received via postMessage.\nNo cross-origin errors!');
+          break;
+          
+        case 'GENOGRAM_EXPORT_SVG':
+          log('✅ SVG export successful via postMessage (no clipboard error)', { 
+            svgLength: event.data.svg?.length,
+            width: event.data.width,
+            height: event.data.height 
+          }, 'success');
+          
+          // Create download link
+          const blob = new Blob([event.data.svg], { type: 'image/svg+xml' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'genogram-export.svg';
+          a.click();
+          URL.revokeObjectURL(url);
+          
+          alert('Export successful! SVG downloaded.\nNo cross-origin errors!');
+          break;
+          
+        case 'GENOGRAM_EXPORT_PNG':
+          log('✅ PNG export successful via postMessage', { 
+            dataUrlLength: event.data.dataUrl?.length,
+            width: event.data.width,
+            height: event.data.height 
+          }, 'success');
+          break;
+          
+        case 'GENOGRAM_CHANGED':
+          log(`Genogram changed: ${event.data.changeType}`, null, 'info');
+          break;
+          
+        default:
+          if (type) log(`Message received: ${type}`, event.data, 'info');
+      }
+    });
+    
+    // Test functions
+    function sendMessage(message) {
+      if (!isReady) {
+        log('⚠️ Genogram not ready yet', null, 'warning');
+        return;
+      }
+      iframe.contentWindow.postMessage(message, '*');
+      log(`Sent: ${message.type}`, message.data);
+    }
+    
+    function loadSampleData() {
+      const sampleData = {
+        people: [
+          { id: '1', name: 'John Smith', gender: 'male', age: 45, x: 300, y: 200 },
+          { id: '2', name: 'Jane Smith', gender: 'female', age: 43, x: 500, y: 200 },
+          { id: '3', name: 'Child 1', gender: 'male', age: 18, x: 300, y: 400 },
+          { id: '4', name: 'Child 2', gender: 'female', age: 16, x: 500, y: 400 }
+        ],
+        relationships: [
+          { id: 'r1', from: '1', to: '2', type: 'marriage' },
+          { id: 'r2', from: 'r1', to: '3', type: 'child' },
+          { id: 'r3', from: 'r1', to: '4', type: 'child' }
+        ],
+        households: [],
+        textBoxes: []
+      };
+      
+      sendMessage({ type: 'LOAD_GENOGRAM', data: sampleData });
+    }
+    
+    function testSaveOperation() {
+      log('🧪 Testing save operation...', null, 'info');
+      sendMessage({ type: 'REQUEST_SAVE' });
+      
+      // Also test by clicking save button in iframe
+      setTimeout(() => {
+        log('💡 Tip: You can also click the "Save to Note" button in the toolbar', null, 'info');
+      }, 1000);
+    }
+    
+    function testExportOperation() {
+      log('🧪 Testing export operation...', null, 'info');
+      sendMessage({ type: 'REQUEST_EXPORT_SVG' });
+      
+      // Also test by clicking export button in iframe
+      setTimeout(() => {
+        log('💡 Tip: You can also click the "Export to Parent" button in the toolbar', null, 'info');
+      }, 1000);
+    }
+    
+    function clearData() {
+      sendMessage({ 
+        type: 'LOAD_GENOGRAM', 
+        data: { people: [], relationships: [], households: [], textBoxes: [] } 
+      });
+    }
+    
+    // Initial log
+    log('Test page loaded. Waiting for genogram to initialize...', null, 'info');
+    log('🔒 Security fixes applied: File picker and clipboard APIs replaced with postMessage', null, 'success');
+    
+    // Check if iframe loaded
+    iframe.onload = () => {
+      log('✅ Iframe loaded successfully', null, 'success');
+    };
+    
+    iframe.onerror = (error) => {
+      log('❌ Iframe failed to load', error, 'error');
+    };
+  </script>
+</body>
+</html> 

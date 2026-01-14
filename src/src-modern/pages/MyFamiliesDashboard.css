@@ -1,0 +1,428 @@
+/* My Families Dashboard Styles */
+.my-families-dashboard {
+  min-height: 100vh;
+  background: #f3f4f6;
+  padding-bottom: 40px;
+}
+
+/* Header */
+.mf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 40px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.mf-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.mf-back-button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mf-back-button:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.mf-header-left h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.mf-header-left p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.mf-header-right {
+  display: flex;
+  gap: 12px;
+}
+
+.mf-action-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mf-action-button:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Stats Grid */
+.mf-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 24px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.mf-stat-card {
+  display: flex;
+  gap: 16px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.mf-stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mf-stat-content {
+  flex: 1;
+}
+
+.mf-stat-label {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.mf-stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* Filter Tabs */
+.mf-filter-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 0 40px 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.mf-filter-tab {
+  padding: 10px 20px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mf-filter-tab:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.mf-filter-tab.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+/* Cases List */
+.mf-cases-list {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mf-loading,
+.mf-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #9ca3af;
+  font-size: 16px;
+}
+
+/* Case Card */
+.mf-case-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.mf-case-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.mf-case-header {
+  margin-bottom: 20px;
+}
+
+.mf-case-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.mf-case-card h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.mf-case-id {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* Priority Badges */
+.mf-priority-badge {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.priority-badge-high {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.priority-badge-medium {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.priority-badge-low {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.priority-badge-default {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Case Metrics */
+.mf-case-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.mf-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mf-metric-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.mf-metric-value {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* Health Bar */
+.mf-health-bar {
+  width: 200px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Member Counts */
+.mf-members-active {
+  color: #059669;
+  background: #d1fae5;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.mf-members-inactive {
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Flag Badges */
+.mf-flag-badge {
+  background: #fef3c7;
+  color: #d97706;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-right: 6px;
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+.mf-no-flags {
+  color: #059669;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Case Footer */
+.mf-case-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.mf-case-meta {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.mf-view-details {
+  padding: 8px 16px;
+  background: #3b82f6;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mf-view-details:hover {
+  background: #2563eb;
+}
+
+.mf-case-updated {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mf-header {
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .mf-header-left {
+    width: 100%;
+  }
+
+  .mf-header-right {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .mf-action-button {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .mf-stats-grid {
+    padding: 20px;
+    grid-template-columns: 1fr;
+  }
+
+  .mf-filter-tabs {
+    padding: 0 20px 20px;
+    flex-wrap: wrap;
+  }
+
+  .mf-filter-tab {
+    flex: 1 1 auto;
+    min-width: fit-content;
+  }
+
+  .mf-cases-list {
+    padding: 0 20px;
+  }
+
+  .mf-case-card {
+    padding: 20px;
+  }
+
+  .mf-health-bar {
+    width: 150px;
+  }
+
+  .mf-metric-value {
+    flex-wrap: wrap;
+  }
+
+  .mf-case-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .mf-view-details {
+    width: 100%;
+  }
+
+  .mf-case-updated {
+    position: static;
+    margin-top: 12px;
+  }
+}

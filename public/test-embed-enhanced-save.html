@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enhanced Embedded Save Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f8fafc;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #1e293b;
+      margin-bottom: 10px;
+      font-size: 2.5rem;
+    }
+    .feature-banner {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+    .feature-banner h2 {
+      margin: 0 0 10px 0;
+      font-size: 1.5rem;
+    }
+    .feature-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .feature {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 15px;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+    }
+    .feature strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .controls {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+      margin-bottom: 20px;
+    }
+    .button-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 15px 0;
+    }
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    .primary {
+      background-color: #3b82f6;
+      color: white;
+    }
+    .success {
+      background-color: #10b981;
+      color: white;
+    }
+    .secondary {
+      background-color: #6b7280;
+      color: white;
+    }
+    .iframe-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+      overflow: hidden;
+      height: 600px;
+      margin-bottom: 20px;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .log-container {
+      background: #1e293b;
+      color: #e2e8f0;
+      border-radius: 8px;
+      padding: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .log-entry {
+      margin-bottom: 8px;
+      padding: 4px 0;
+    }
+    .log-entry.success {
+      color: #22d3ee;
+    }
+    .log-entry.warning {
+      color: #fbbf24;
+    }
+    .log-entry.error {
+      color: #f87171;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .status-ready {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .status-loading {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .keyboard-shortcuts {
+      background: #f1f5f9;
+      border-left: 4px solid #3b82f6;
+      padding: 15px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Enhanced Embedded Save</h1>
+    
+    <div class="feature-banner">
+      <h2>New Features in Embedded Mode</h2>
+      <div class="feature-list">
+        <div class="feature">
+          <strong>🎯 Smart Save Options</strong>
+          Choose between parent-only, local-only, or everything
+        </div>
+        <div class="feature">
+          <strong>💾 Local Downloads</strong>
+          Download .geno files directly from the iframe
+        </div>
+        <div class="feature">
+          <strong>📋 Clipboard Copy</strong>
+          Copy genogram data to clipboard in embedded mode
+        </div>
+        <div class="feature">
+          <strong>⌨️ Keyboard Shortcuts</strong>
+          Ctrl+S (parent) • Shift+Ctrl+S (enhanced)
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+        <h3 style="margin: 0;">Test Enhanced Save Features</h3>
+        <span id="status" class="status-badge status-loading">Loading...</span>
+      </div>
+      
+      <div class="keyboard-shortcuts">
+        <strong>⌨️ Keyboard Shortcuts:</strong><br>
+        <code>Ctrl+S</code> - Basic save to parent app<br>
+        <code>Shift+Ctrl+S</code> - Enhanced save (parent + local + clipboard)
+      </div>
+      
+      <div class="button-group">
+        <button class="primary" onclick="loadSampleData()">
+          📊 Load Sample Data
+        </button>
+        <button class="success" onclick="testBasicSave()">
+          💾 Test Basic Save
+        </button>
+        <button class="success" onclick="testEnhancedSave()">
+          ✨ Test Enhanced Save
+        </button>
+        <button class="secondary" onclick="testLocalDownload()">
+          ⬇️ Test Local Download
+        </button>
+        <button class="secondary" onclick="clearLog()">
+          🗑️ Clear Log
+        </button>
+      </div>
+    </div>
+
+    <div class="iframe-container">
+      <iframe 
+        id="genogram-iframe" 
+        src="http://localhost:3000?embed=true"
+        allow="clipboard-write"
+      ></iframe>
+    </div>
+    
+    <h3>📋 Event Log</h3>
+    <div class="log-container" id="log">
+      <div class="log-entry">Waiting for genogram to load...</div>
+    </div>
+  </div>
+
+  <script>
+    const iframe = document.getElementById('genogram-iframe');
+    const log = document.getElementById('log');
+    const status = document.getElementById('status');
+    let isReady = false;
+    
+    // Log function with timestamp and styling
+    function addLog(message, type = 'info', data = null) {
+      const timestamp = new Date().toLocaleTimeString();
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      
+      let logText = `[${timestamp}] ${message}`;
+      if (data) {
+        logText += `\n${JSON.stringify(data, null, 2)}`;
+      }
+      entry.textContent = logText;
+      
+      log.insertBefore(entry, log.firstChild);
+      
+      // Keep only last 15 entries
+      while (log.children.length > 15) {
+        log.removeChild(log.lastChild);
+      }
+    }
+    
+    // Clear log
+    function clearLog() {
+      log.innerHTML = '';
+      addLog('Log cleared', 'info');
+    }
+    
+    // Load sample data
+    function loadSampleData() {
+      if (!isReady) {
+        addLog('Genogram not ready yet', 'warning');
+        return;
+      }
+      
+      const sampleData = {
+        people: [
+          { id: '1', name: 'John Doe', x: 100, y: 100, gender: 'male' },
+          { id: '2', name: 'Jane Smith', x: 300, y: 100, gender: 'female' }
+        ],
+        relationships: [
+          { id: 'r1', from: '1', to: '2', type: 'marriage' }
+        ],
+        households: [],
+        textBoxes: []
+      };
+      
+      iframe.contentWindow.postMessage({
+        type: 'LOAD_GENOGRAM',
+        data: sampleData
+      }, '*');
+      
+      addLog('Sample data sent to genogram', 'success');
+    }
+    
+    // Test basic save
+    function testBasicSave() {
+      if (!isReady) {
+        addLog('Genogram not ready yet', 'warning');
+        return;
+      }
+      
+      iframe.contentWindow.postMessage({
+        type: 'REQUEST_SAVE'
+      }, '*');
+      
+      addLog('Requested basic save', 'info');
+    }
+    
+    // Test enhanced save
+    function testEnhancedSave() {
+      if (!isReady) {
+        addLog('Genogram not ready yet', 'warning');
+        return;
+      }
+      
+      iframe.contentWindow.postMessage({
+        type: 'REQUEST_ENHANCED_SAVE'
+      }, '*');
+      
+      addLog('Requested enhanced save (parent + local + clipboard)', 'success');
+    }
+    
+    // Test local download
+    function testLocalDownload() {
+      if (!isReady) {
+        addLog('Genogram not ready yet', 'warning');
+        return;
+      }
+      
+      iframe.contentWindow.postMessage({
+        type: 'REQUEST_EXPORT',
+        format: 'geno',
+        options: {
+          directDownload: true,
+          sendToParent: false
+        }
+      }, '*');
+      
+      addLog('Requested local .geno download', 'info');
+    }
+    
+    // Listen for messages from iframe
+    window.addEventListener('message', (event) => {
+      const { type, data } = event.data || {};
+      
+      switch (type) {
+        case 'GENOGRAM_READY':
+          isReady = true;
+          status.textContent = 'Ready';
+          status.className = 'status-badge status-ready';
+          addLog('✅ Genogram ready with enhanced save features!', 'success', event.data);
+          break;
+          
+        case 'genogram-ready':
+          isReady = true;
+          status.textContent = 'Ready';
+          status.className = 'status-badge status-ready';
+          addLog('✅ Genogram ready (basic signal)', 'success');
+          break;
+          
+        case 'GENOGRAM_SAVE':
+          addLog('📤 Basic save received', 'success', {
+            peopleCount: data.people?.length || 0,
+            relationshipsCount: data.relationships?.length || 0,
+            hasSVG: !!event.data.svg,
+            isDirty: event.data.isDirty
+          });
+          break;
+          
+        case 'GENOGRAM_EXPORT':
+          addLog(`📁 Export received: ${event.data.format}`, 'success', {
+            format: event.data.format,
+            filename: event.data.filename,
+            hasContent: !!event.data.content || !!event.data.dataUrl
+          });
+          break;
+          
+        default:
+          if (type) {
+            addLog(`📨 Message: ${type}`, 'info', data);
+          }
+      }
+    });
+    
+    addLog('Enhanced save test page loaded', 'success');
+  </script>
+</body>
+</html> 

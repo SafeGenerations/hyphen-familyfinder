@@ -1,0 +1,57 @@
+{
+  "version": "2.0",
+  "metadata": {
+    "created": "2025-10-20T14:00:00.000Z",
+    "modified": "2025-10-20T14:00:00.000Z",
+    "author": "Demo",
+    "description": "Gilmore Girls family and Stars Hollow network.",
+    "caseId": "GG-2000-01"
+  },
+  "people": [
+    {
+      "id": "richard-gilmore", "x": 400, "y": 100, "zIndex": 0, "name": "Richard Gilmore", "gender": "male", "dateOfBirth": "1944-08-01", "dateOfDeath": "2016-01-01", "isDeceased": true, "caseNotes": "Patriarch. Executive at an insurance company. Values tradition and education.", "tags": ["deceased", "professional"]
+    },
+    {
+      "id": "emily-gilmore", "x": 550, "y": 100, "zIndex": 0, "name": "Emily Gilmore", "gender": "female", "dateOfBirth": "1946-06-15", "age": 79, "caseNotes": "Matriarch. Socialite, involved in numerous charities and the DAR. Complicated relationship with her daughter.", "tags": ["socialite"]
+    },
+    {
+      "id": "lorelai-gilmore", "x": 300, "y": 250, "zIndex": 1, "name": "Lorelai Gilmore", "gender": "female", "dateOfBirth": "1968-04-25", "age": 57, "caseNotes": "Mother to Rory. Co-owner and manager of the Dragonfly Inn. Fiercely independent.", "tags": ["employed", "business-owner"]
+    },
+    {
+      "id": "christopher-hayden", "x": 450, "y": 250, "zIndex": 0, "name": "Christopher Hayden", "gender": "male", "dateOfBirth": "1968-08-11", "age": 57, "caseNotes": "Rory's father. Tries to be involved but is often unreliable. Inherited wealth.", "tags": ["wealthy"]
+    },
+    {
+      "id": "rory-gilmore", "x": 375, "y": 400, "zIndex": 2, "name": "Lorelai 'Rory' Gilmore", "gender": "female", "dateOfBirth": "1984-10-08", "age": 41, "caseNotes": "Daughter of Lorelai. Aspiring journalist. Graduated from Yale. The central focus of many family dynamics.", "tags": ["educated", "professional"]
+    },
+    {
+      "id": "luke-danes", "x": 150, "y": 250, "zIndex": 0, "name": "Luke Danes", "gender": "male", "dateOfBirth": "1967-10-15", "age": 58, "caseNotes": "Owner of Luke's Diner. A stable, grounding presence in Lorelai and Rory's lives. Grumpy but dependable.", "tags": ["employed", "business-owner", "stable-housing"]
+    },
+    {
+      "id": "sookie-st-james", "x": 100, "y": 400, "zIndex": 0, "name": "Sookie St. James", "gender": "female", "dateOfBirth": "1970-05-20", "age": 55, "caseNotes": "Chef and co-owner of the Dragonfly Inn. Lorelai's best friend and business partner. Clumsy but brilliant.", "tags": ["employed", "business-owner", "friend"]
+    },
+    {
+      "id": "jackson-belleville", "x": -50, "y": 400, "zIndex": 0, "name": "Jackson Belleville", "gender": "male", "dateOfBirth": "1968-01-10", "age": 57, "caseNotes": "Local farmer, supplies produce to the Dragonfly. Sookie's husband. Passionate about his vegetables.", "tags": ["employed", "business-owner"]
+    }
+  ],
+  "relationships": [
+    { "id": "rel-grandparents", "from": "richard-gilmore", "to": "emily-gilmore", "type": "married", "status": "ended", "endDate": "2016-01-01", "children": ["lorelai-gilmore"], "notes": "Long, traditional, and sometimes tumultuous marriage." },
+    { "id": "rel-parents", "from": "christopher-hayden", "to": "lorelai-gilmore", "type": "separated", "status": "active", "children": ["rory-gilmore"], "notes": "Never married during Rory's childhood. Complicated, on-again, off-again relationship." },
+    { "id": "rel-luke-lorelai", "from": "luke-danes", "to": "lorelai-gilmore", "type": "romantic", "status": "active", "notes": "Long-term, slow-burn romance. Key relationship." },
+    { "id": "rel-sookie-jackson", "from": "jackson-belleville", "to": "sookie-st-james", "type": "married", "status": "active", "notes": "A loving and chaotic marriage." }
+  ],
+  "households": [
+    { "id": "gilmore-mansion", "name": "Gilmore Mansion", "points": [{"x": 375, "y": 50}, {"x": 575, "y": 50}, {"x": 575, "y": 150}, {"x": 375, "y": 150}], "color": "#3b82f6", "labelPosition": "top", "members": ["emily-gilmore", "richard-gilmore"], "notes": "Represents wealth, tradition, and the world Lorelai left behind." },
+    { "id": "lorelai-house", "name": "Lorelai & Rory's House", "points": [{"x": 275, "y": 200}, {"x": 475, "y": 200}, {"x": 475, "y": 450}, {"x": 275, "y": 450}], "color": "#ec4899", "labelPosition": "top", "members": ["lorelai-gilmore", "rory-gilmore"], "notes": "The heart of the show. A symbol of their independence." },
+    { "id": "sookie-house", "name": "St. James-Belleville House", "points": [{"x": -75, "y": 350}, {"x": 125, "y": 350}, {"x": 125, "y": 450}, {"x": -75, "y": 450}], "color": "#10b981", "labelPosition": "top", "members": ["sookie-st-james", "jackson-belleville"], "notes": "Represents Sookie's family life outside the Inn." }
+  ],
+  "textBoxes": [
+    { "id": "title", "x": 10, "y": 10, "text": "Gilmore Girls\\nFamily & Community Map", "fontSize": 18, "backgroundColor": "#fef3c7", "width": 250, "height": 60 },
+    { "id": "lukes-diner", "x": 10, "y": 150, "text": "📍 Luke's Diner\\nCentral town hub. Source of coffee and stability.", "fontSize": 12, "backgroundColor": "#e0f2fe", "width": 200, "height": 60 },
+    { "id": "dragonfly-inn", "x": 10, "y": 300, "text": "📍 Dragonfly Inn\\nLorelai & Sookie's business. A major life achievement.", "fontSize": 12, "backgroundColor": "#d1fae5", "width": 220, "height": 60 }
+  ],
+  "placements": [],
+  "customAttributes": { "caseNumber": "GG-2000-01", "caseGoal": "Maintain family connection despite conflict." },
+  "tagDefinitions": [],
+  "filterTemplates": [],
+  "searchHistory": []
+}

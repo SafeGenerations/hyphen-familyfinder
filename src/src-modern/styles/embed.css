@@ -1,0 +1,415 @@
+/* src/src-modern/styles/embed.css */
+
+/* Embed mode specific styles */
+body.embed-mode {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Hide elements in embed mode */
+.embed-mode .header,
+.embed-mode .footer,
+.embed-mode .promo-sidebar,
+.embed-mode .help-button,
+.embed-mode .feedback-button,
+.embed-mode .tutorial-overlay {
+  display: none !important;
+}
+
+/* Adjust canvas for embed mode */
+.embed-mode #genogram-canvas {
+  height: 100vh !important;
+  width: 100vw !important;
+}
+
+/* Embed save button */
+.embed-save-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 24px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 40;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.embed-save-button:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.embed-save-button:active {
+  transform: translateY(0);
+}
+
+/* Floating toolbar adjustments for embed mode */
+.embed-mode .floating-toolbar {
+  top: 20px !important;
+  left: 20px !important;
+}
+
+/* Side panel adjustments */
+.embed-mode .side-panel {
+  max-height: calc(100vh - 40px);
+  top: 20px;
+}
+
+/* Modal adjustments for embed mode */
+.embed-mode .modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+/* Responsive adjustments for embed mode */
+@media (max-width: 768px) {
+  .embed-mode .floating-toolbar {
+    bottom: 80px !important;
+    top: auto !important;
+    left: 50% !important;
+    transform: translateX(-50%);
+  }
+  
+  .embed-save-button {
+    bottom: 10px;
+    right: 10px;
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Custom scrollbar for embed mode */
+.embed-mode ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.embed-mode ::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.embed-mode ::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.embed-mode ::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Loading state for embed mode */
+.embed-loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  z-index: 9999;
+}
+
+.embed-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f4f6;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Enhanced embed save toolbar */
+.embed-save-toolbar {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 40;
+}
+
+.embed-save-toolbar button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.embed-save-toolbar button:active {
+  transform: translateY(0);
+}
+
+.embed-save-options {
+  animation: slideUp 0.2s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Notification styles for embed mode */
+.embed-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  padding: 12px 20px;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 4.7s;
+}
+
+.embed-notification.success {
+  background-color: #10b981;
+}
+
+.embed-notification.warning {
+  background-color: #f59e0b;
+}
+
+.embed-notification.info {
+  background-color: #3b82f6;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+/* Mobile adjustments for enhanced toolbar */
+@media (max-width: 768px) {
+  .embed-save-toolbar {
+    bottom: 10px;
+    right: 10px;
+  }
+  
+  .embed-save-options {
+    right: 0;
+    min-width: 180px;
+  }
+  
+  .embed-notification {
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+}
+
+/* Theme customization support */
+.embed-mode[data-theme="dark"] {
+  background-color: #1f2937;
+  color: #f3f4f6;
+}
+
+.embed-mode[data-theme="dark"] .side-panel,
+.embed-mode[data-theme="dark"] .floating-toolbar,
+.embed-mode[data-theme="dark"] .modal-content {
+  background-color: #374151;
+  color: #f3f4f6;
+}
+
+/* Compact mode for small iframes */
+.embed-mode.compact .floating-toolbar {
+  transform: scale(0.9);
+}
+
+.embed-mode.compact .side-panel {
+  width: 280px;
+}
+
+.embed-mode.compact .embed-save-button {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+/* Embed toolbar styles */
+.embed-toolbar {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 8px;
+  background: white;
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 30;
+}
+
+.embed-toolbar button {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.embed-toolbar button:hover {
+  background-color: #f3f4f6;
+}
+
+/* Read-only mode styles */
+.read-only-mode .floating-toolbar,
+.read-only-mode .embed-save-button,
+.read-only-mode .add-person-button {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.read-only-mode .side-panel {
+  opacity: 0.8;
+}
+
+.read-only-mode::after {
+  content: 'Read Only';
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: #fbbf24;
+  color: #92400e;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 50;
+}
+
+/* Collaboration styles */
+.collaboration-presence {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 30;
+  font-size: 14px;
+}
+
+.presence-dot {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.remote-cursor {
+  position: absolute;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.1s ease-out;
+}
+
+.cursor-label {
+  position: absolute;
+  top: 20px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Save success notification */
+.embed-notification.save-success {
+  background-color: #10b981;
+}
+
+/* Read-only notification */
+.embed-notification.read-only {
+  background-color: #f59e0b;
+  color: white;
+}
+
+/* Watermark styles */
+.watermark-text {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Enhanced responsive styles for embed */
+@media (max-width: 640px) {
+  .embed-toolbar {
+    top: auto;
+    bottom: 80px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+  
+  .collaboration-presence {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+}
+
+/* Accessibility improvements for embed mode */
+.embed-mode:focus-within {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.embed-mode button:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Print styles for embedded genograms */
+@media print {
+  .embed-mode .embed-toolbar,
+  .embed-mode .embed-save-button,
+  .embed-mode .floating-toolbar,
+  .embed-mode .collaboration-presence {
+    display: none !important;
+  }
+  
+  .embed-mode #genogram-canvas {
+    background: white !important;
+  }
+} 

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Genogram Embed Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    .controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      background-color: #2563eb;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #1d4ed8;
+    }
+    button.secondary {
+      background-color: #6b7280;
+    }
+    button.secondary:hover {
+      background-color: #4b5563;
+    }
+    .iframe-container {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      overflow: hidden;
+      height: 600px;
+      position: relative;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .output {
+      background: #1f2937;
+      color: #f3f4f6;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 15px;
+    }
+    .status {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    .status.ready {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+    .status.loading {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+    .data-input {
+      width: 100%;
+      height: 150px;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Genogram Builder - Embed Integration Test</h1>
+    
+    <div class="controls">
+      <div class="status loading" id="status">
+        Loading genogram...
+      </div>
+      
+      <h3>Test Controls</h3>
+      <div class="button-group">
+        <button onclick="loadSampleData()">Load Sample Data</button>
+        <button onclick="requestSave()">Request Save</button>
+        <button onclick="requestSVGExport()">Export as SVG</button>
+        <button onclick="requestPNGExport()">Export as PNG</button>
+        <button onclick="clearData()">Clear Genogram</button>
+      </div>
+      
+      <div class="button-group">
+        <button class="secondary" onclick="toggleTheme()">Toggle Theme</button>
+        <button class="secondary" onclick="toggleCompact()">Toggle Compact Mode</button>
+        <button class="secondary" onclick="focusOnPerson()">Focus on Person</button>
+        <button class="secondary" onclick="addNewPerson()">Add New Person</button>
+      </div>
+      
+      <h3>Custom Data (JSON)</h3>
+      <textarea id="customData" class="data-input" placeholder="Paste your genogram JSON data here...">{
+  "people": [
+    {
+      "id": "1",
+      "name": "John Smith",
+      "gender": "male",
+      "age": 45,
+      "x": 400,
+      "y": 200
+    },
+    {
+      "id": "2",
+      "name": "Jane Smith",
+      "gender": "female",
+      "age": 43,
+      "x": 600,
+      "y": 200
+    }
+  ],
+  "relationships": [
+    {
+      "id": "r1",
+      "from": "1",
+      "to": "2",
+      "type": "marriage"
+    }
+  ]
+}</textarea>
+      <button onclick="loadCustomData()">Load Custom Data</button>
+      
+      <h3>Console Output</h3>
+      <div id="output" class="output">Waiting for messages...</div>
+    </div>
+    
+    <div class="iframe-container">
+      <iframe 
+        id="genogramFrame" 
+        src="http://localhost:3000?embed=true"
+        allow="clipboard-write"
+      ></iframe>
+    </div>
+  </div>
+
+  <script>
+    let isDarkTheme = false;
+    let isCompact = false;
+    const output = document.getElementById('output');
+    const status = document.getElementById('status');
+    const iframe = document.getElementById('genogramFrame');
+    
+    // Log function
+    function log(message, data = null) {
+      const timestamp = new Date().toLocaleTimeString();
+      const entry = document.createElement('div');
+      entry.style.marginBottom = '5px';
+      
+      if (data) {
+        entry.innerHTML = `<strong>[${timestamp}]</strong> ${message}<br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+      } else {
+        entry.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+      }
+      
+      output.insertBefore(entry, output.firstChild);
+      
+      // Keep only last 10 entries
+      while (output.children.length > 10) {
+        output.removeChild(output.lastChild);
+      }
+    }
+    
+    // Listen for messages from iframe
+    window.addEventListener('message', (event) => {
+      // In production, check event.origin
+      const { type, data } = event.data || {};
+      
+      switch (type) {
+        case 'GENOGRAM_READY':
+          status.textContent = 'Genogram ready!';
+          status.className = 'status ready';
+          log('Genogram initialized', event.data);
+          break;
+          
+        case 'GENOGRAM_SAVE':
+          log('Save requested', data);
+          alert('Genogram saved! Check console output.');
+          break;
+          
+        case 'GENOGRAM_EXPORT_SVG':
+          log('SVG exported', { width: event.data.width, height: event.data.height });
+          // You could display or download the SVG here
+          break;
+          
+        case 'GENOGRAM_EXPORT_PNG':
+          log('PNG exported', { width: event.data.width, height: event.data.height });
+          // You could display or download the PNG here
+          break;
+          
+        case 'GENOGRAM_CHANGED':
+          log(`Genogram changed: ${event.data.changeType}`);
+          break;
+          
+        case 'GENOGRAM_CLOSE_REQUESTED':
+          log('Close requested');
+          if (confirm('Close the genogram editor?')) {
+            // Handle close
+          }
+          break;
+          
+        default:
+          if (type) log(`Unknown message type: ${type}`, event.data);
+      }
+    });
+    
+    // Test functions
+    function sendMessage(message) {
+      iframe.contentWindow.postMessage(message, '*');
+      log(`Sent: ${message.type}`, message.data);
+    }
+    
+    function loadSampleData() {
+      const sampleData = {
+        people: [
+          { id: '1', name: 'Grandfather', gender: 'male', age: 75, x: 200, y: 100, isDeceased: true },
+          { id: '2', name: 'Grandmother', gender: 'female', age: 73, x: 400, y: 100 },
+          { id: '3', name: 'Father', gender: 'male', age: 45, x: 200, y: 300 },
+          { id: '4', name: 'Mother', gender: 'female', age: 43, x: 400, y: 300 },
+          { id: '5', name: 'Child 1', gender: 'male', age: 18, x: 150, y: 500 },
+          { id: '6', name: 'Child 2', gender: 'female', age: 16, x: 300, y: 500 },
+          { id: '7', name: 'Child 3', gender: 'non-binary', age: 14, x: 450, y: 500 }
+        ],
+        relationships: [
+          { id: 'r1', from: '1', to: '2', type: 'marriage' },
+          { id: 'r2', from: '3', to: '4', type: 'marriage' },
+          { id: 'r3', from: 'r1', to: '3', type: 'child' },
+          { id: 'r4', from: 'r2', to: '5', type: 'child' },
+          { id: 'r5', from: 'r2', to: '6', type: 'child' },
+          { id: 'r6', from: 'r2', to: '7', type: 'child' }
+        ],
+        households: [],
+        textBoxes: []
+      };
+      
+      sendMessage({ type: 'LOAD_GENOGRAM', data: sampleData });
+    }
+    
+    function loadCustomData() {
+      try {
+        const data = JSON.parse(document.getElementById('customData').value);
+        sendMessage({ type: 'LOAD_GENOGRAM', data });
+      } catch (error) {
+        alert('Invalid JSON data: ' + error.message);
+      }
+    }
+    
+    function requestSave() {
+      sendMessage({ type: 'REQUEST_SAVE' });
+    }
+    
+    function requestSVGExport() {
+      sendMessage({ type: 'REQUEST_EXPORT_SVG' });
+    }
+    
+    function requestPNGExport() {
+      sendMessage({ type: 'REQUEST_EXPORT_PNG' });
+    }
+    
+    function clearData() {
+      sendMessage({ 
+        type: 'LOAD_GENOGRAM', 
+        data: { people: [], relationships: [], households: [], textBoxes: [] } 
+      });
+    }
+    
+    function toggleTheme() {
+      isDarkTheme = !isDarkTheme;
+      sendMessage({ 
+        type: 'SET_THEME', 
+        data: { theme: isDarkTheme ? 'dark' : 'light' } 
+      });
+      // Update iframe URL
+      const url = new URL(iframe.src);
+      url.searchParams.set('theme', isDarkTheme ? 'dark' : 'light');
+      iframe.src = url.toString();
+    }
+    
+    function toggleCompact() {
+      isCompact = !isCompact;
+      const url = new URL(iframe.src);
+      url.searchParams.set('compact', isCompact ? 'true' : 'false');
+      iframe.src = url.toString();
+    }
+    
+    function focusOnPerson() {
+      const personId = prompt('Enter person ID to focus on:', '3');
+      if (personId) {
+        sendMessage({ 
+          type: 'FOCUS_PERSON', 
+          data: { personId } 
+        });
+      }
+    }
+    
+    function addNewPerson() {
+      const name = prompt('Enter person name:', 'New Person');
+      if (name) {
+        sendMessage({
+          type: 'ADD_PERSON',
+          data: {
+            person: {
+              id: Date.now().toString(),
+              name: name,
+              gender: 'unknown',
+              age: '',
+              x: 300 + Math.random() * 200,
+              y: 200 + Math.random() * 200
+            }
+          }
+        });
+      }
+    }
+    
+    // Initial log
+    log('Test page loaded. Waiting for genogram to initialize...');
+  </script>
+</body>
+</html> 

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genogram Builder Dev Environment - Embed Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .environment-info {
+            background-color: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .url-display {
+            font-family: monospace;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+        
+        .genogram-container {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .output {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .status.connected {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .status.disconnected {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            Genogram Builder - Dev Environment Test
+            <span class="status disconnected" id="status">Not Connected</span>
+        </h1>
+        
+        <div class="environment-info">
+            <strong>Environment:</strong> dev-breakable<br>
+            <strong>URL:</strong>
+            <div class="url-display">https://green-tree-0cc12f61e-devbreakable.westus2.6.azurestaticapps.net/</div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="loadGenogram()">Load Genogram</button>
+            <button onclick="getGenogramData()" disabled id="getDataBtn">Get Genogram Data</button>
+            <button onclick="getSVG()" disabled id="getSVGBtn">Export as SVG</button>
+            <button onclick="loadSampleData()" disabled id="loadDataBtn">Load Sample Data</button>
+            <button onclick="clearOutput()">Clear Output</button>
+        </div>
+        
+        <div class="genogram-container" id="genogramContainer">
+            <p style="text-align: center; color: #666; margin-top: 50px;">
+                Click "Load Genogram" to embed the dev environment
+            </p>
+        </div>
+        
+        <div class="output" id="output" style="display: none;">
+            <strong>Output:</strong><br>
+            <span id="outputContent"></span>
+        </div>
+    </div>
+
+    <script>
+        let genogramWindow = null;
+        const origin = 'https://green-tree-0cc12f61e-devbreakable.westus2.6.azurestaticapps.net';
+        
+        function updateStatus(connected) {
+            const status = document.getElementById('status');
+            if (connected) {
+                status.textContent = 'Connected';
+                status.className = 'status connected';
+                document.getElementById('getDataBtn').disabled = false;
+                document.getElementById('getSVGBtn').disabled = false;
+                document.getElementById('loadDataBtn').disabled = false;
+            } else {
+                status.textContent = 'Not Connected';
+                status.className = 'status disconnected';
+                document.getElementById('getDataBtn').disabled = true;
+                document.getElementById('getSVGBtn').disabled = true;
+                document.getElementById('loadDataBtn').disabled = true;
+            }
+        }
+        
+        function loadGenogram() {
+            const container = document.getElementById('genogramContainer');
+            container.innerHTML = `<iframe src="${origin}/?embed=true" id="genogramFrame"></iframe>`;
+            
+            const iframe = document.getElementById('genogramFrame');
+            genogramWindow = iframe.contentWindow;
+            
+            // Set up message listener
+            window.addEventListener('message', handleMessage);
+            
+            // Wait for iframe to load
+            iframe.onload = () => {
+                // Connection will be established automatically when genogram is ready
+                console.log('Iframe loaded, waiting for genogram-ready signal...');
+            };
+        }
+        
+        function handleMessage(event) {
+            if (event.origin !== origin) return;
+            
+            const output = document.getElementById('output');
+            const outputContent = document.getElementById('outputContent');
+            
+            output.style.display = 'block';
+            
+            switch(event.data.type) {
+                case 'genogram-ready':
+                case 'GENOGRAM_READY':
+                    updateStatus(true);
+                    outputContent.textContent = 'Connection established with genogram builder';
+                    break;
+                    
+                case 'GENOGRAM_SAVE':
+                    outputContent.textContent = JSON.stringify(event.data.data, null, 2);
+                    break;
+                    
+                case 'GENOGRAM_EXPORT_SVG':
+                    outputContent.textContent = 'SVG Export received:\n' + event.data.svg.substring(0, 200) + '...';
+                    // In a real application, you could create a download link here
+                    break;
+                    
+                case 'GENOGRAM_EXPORT_PNG':
+                    outputContent.textContent = 'PNG Export received';
+                    break;
+                    
+                case 'error':
+                    outputContent.textContent = 'Error: ' + event.data.message;
+                    break;
+                    
+                default:
+                    outputContent.textContent = 'Unknown message type: ' + event.data.type;
+            }
+        }
+        
+        function getGenogramData() {
+            if (genogramWindow) {
+                genogramWindow.postMessage({ type: 'REQUEST_SAVE' }, origin);
+            }
+        }
+        
+        function getSVG() {
+            if (genogramWindow) {
+                genogramWindow.postMessage({ type: 'REQUEST_EXPORT_SVG' }, origin);
+            }
+        }
+        
+        function loadSampleData() {
+            if (genogramWindow) {
+                const sampleData = {
+                    people: [
+                        {
+                            id: '1',
+                            name: 'John Doe',
+                            gender: 'male',
+                            age: 45,
+                            birthDate: '1978-05-15',
+                            x: 200,
+                            y: 100
+                        },
+                        {
+                            id: '2',
+                            name: 'Jane Doe',
+                            gender: 'female',
+                            age: 43,
+                            birthDate: '1980-08-22',
+                            x: 400,
+                            y: 100
+                        },
+                        {
+                            id: '3',
+                            name: 'Jimmy Doe',
+                            gender: 'male',
+                            age: 18,
+                            birthDate: '2005-03-10',
+                            x: 300,
+                            y: 250
+                        }
+                    ],
+                    relationships: [
+                        {
+                            id: 'rel1',
+                            from: '1',
+                            to: '2',
+                            type: 'marriage'
+                        }
+                    ],
+                    households: [],
+                    textBoxes: []
+                };
+                
+                genogramWindow.postMessage({ 
+                    type: 'LOAD_GENOGRAM', 
+                    data: sampleData 
+                }, origin);
+                
+                document.getElementById('outputContent').textContent = 
+                    'Sample data sent to genogram builder';
+            }
+        }
+        
+        function clearOutput() {
+            document.getElementById('output').style.display = 'none';
+            document.getElementById('outputContent').textContent = '';
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,29 @@
+{
+  "short_name": "Genogram",
+  "name": "Genogram Builder - Family Relationship Mapper",
+  "description": "Professional genogram creation tool for social services - create detailed family relationship maps, track household dynamics, and visualize family structures.",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#667eea",
+  "background_color": "#f8fafc",
+  "categories": ["productivity", "medical", "utilities"]
+}
