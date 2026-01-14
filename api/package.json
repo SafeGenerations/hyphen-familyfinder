@@ -1,0 +1,14 @@
+{
+  "name": "genogram-api",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "dependencies": {
+    "@azure/functions": "^4.0.0",
+    "mongodb": "^6.0.0",
+    "googleapis": "^128.0.0",
+    "axios": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

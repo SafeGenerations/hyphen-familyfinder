@@ -8,7 +8,6 @@ obj/
 
 # Development data storage
 .dev-data/
-*.json
 
 # Logs
 *.log
