@@ -239,7 +239,10 @@ async function connectToDatabase() {
     }
   }
 
-  const client = new MongoClient(uri);
+  const client = new MongoClient(uri, {
+    serverSelectionTimeoutMS: 5000,
+    connectTimeoutMS: 10000
+  });
   await client.connect();
   cachedClient = client;
   cachedDb = client.db('familyfinder');
