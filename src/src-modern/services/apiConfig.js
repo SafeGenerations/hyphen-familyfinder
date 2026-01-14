@@ -2,12 +2,13 @@
  * API Configuration
  *
  * Centralized configuration for API endpoints.
- * For Azure Static Web Apps, the API is served from the same origin.
+ * Uses standalone Azure Functions app for API.
  */
 
-// In production (Azure SWA), API is at same origin
-// In development, can use REACT_APP_API_BASE_URL for local Functions
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || '';
+// Uses standalone Azure Functions app since SWA managed functions
+// don't support the v3 model properly
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL ||
+  'https://func-hyphen-familyfinder-dev.azurewebsites.net';
 
 export default API_BASE_URL;
 
