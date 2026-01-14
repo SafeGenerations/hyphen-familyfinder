@@ -8,6 +8,7 @@ import {
 import { getCase } from '../services/caseService';
 import { searchContactEvents } from '../services/contactEventService';
 import { getNetworkGraph } from '../services/networkDataService';
+import CaseGenogramView from '../components/CaseGenogramView';
 import './CaseDetailPage.css';
 
 const CaseDetailPage = () => {
@@ -96,44 +97,6 @@ const CaseDetailPage = () => {
       default: return <User size={16} />;
     }
   };
-
-  const getStatusIcon = (status) => {
-    switch (status?.toLowerCase()) {
-      case 'active': return { icon: <CheckCircle size={16} />, color: '#10b981', bg: '#d1fae5' };
-      case 'warming': return { icon: <Clock size={16} />, color: '#f59e0b', bg: '#fef3c7' };
-      case 'pending': return { icon: <Clock size={16} />, color: '#f59e0b', bg: '#fef3c7' };
-      case 'cold':
-      case 'inactive': return { icon: <AlertCircle size={16} />, color: '#ef4444', bg: '#fee2e2' };
-      default: return { icon: <CheckCircle size={16} />, color: '#6b7280', bg: '#f3f4f6' };
-    }
-  };
-
-  // Calculate positions for network members in a circular layout around the child
-  const calculateNodePositions = (nodes) => {
-    if (!nodes || nodes.length === 0) return [];
-
-    const centerX = 300;
-    const centerY = 275;
-    const radius = 180;
-
-    return nodes.map((node, index) => {
-      const angle = (2 * Math.PI * index) / nodes.length - Math.PI / 2;
-      return {
-        ...node,
-        id: node._id || node.id,
-        name: node.name || `${node.firstName || ''} ${node.lastName || ''}`.trim(),
-        role: node.relationshipToChild || node.role || 'Unknown',
-        status: node.activityState || node.status || 'active',
-        x: centerX + radius * Math.cos(angle),
-        y: centerY + radius * Math.sin(angle)
-      };
-    });
-  };
-
-  // Use real network data from API, with fallback to empty array
-  const networkMembers = calculateNodePositions(networkData?.nodes || []);
-
-  const childNode = { id: 'child', name: caseData?.childName || 'Child', role: 'Child', x: 300, y: 275 };
 
   if (loading) {
     return <div className="cd-loading">Loading case details...</div>;
@@ -282,97 +245,16 @@ const CaseDetailPage = () => {
                 </div>
               </div>
 
-              <svg className="cd-network-svg" viewBox="0 0 600 550">
-                {/* Connection lines */}
-                {networkMembers.map(member => (
-                  <line
-                    key={`line-${member.id}`}
-                    x1={childNode.x}
-                    y1={childNode.y}
-                    x2={member.x}
-                    y2={member.y}
-                    stroke="#e5e7eb"
-                    strokeWidth="2"
-                  />
-                ))}
-
-                {/* Network member nodes */}
-                {networkMembers.map(member => {
-                  const statusInfo = getStatusIcon(member.status);
-                  return (
-                    <g key={member.id}>
-                      <circle
-                        cx={member.x}
-                        cy={member.y}
-                        r="32"
-                        fill={statusInfo.bg}
-                        stroke={statusInfo.color}
-                        strokeWidth="3"
-                        className="cd-node"
-                      />
-                      <foreignObject
-                        x={member.x - 30}
-                        y={member.y + 40}
-                        width="60"
-                        height="50"
-                      >
-                        <div className="cd-node-label">
-                          {member.name.split(' ')[0]}<br />
-                          {member.name.split(' ')[1]}
-                        </div>
-                      </foreignObject>
-                    </g>
-                  );
-                })}
-
-                {/* Child node (pinned to center) */}
-                <g>
-                  <circle
-                    cx={childNode.x}
-                    cy={childNode.y}
-                    r="40"
-                    fill="#3b82f6"
-                    className="cd-child-node"
-                  />
-                  <text
-                    x={childNode.x}
-                    y={childNode.y}
-                    textAnchor="middle"
-                    fill="white"
-                    fontSize="14"
-                    fontWeight="600"
-                    dy="5"
-                  >
-                    {(caseData?.childName || 'Child').split(' ')[0]}
-                  </text>
-                  <foreignObject
-                    x={childNode.x - 30}
-                    y={childNode.y + 50}
-                    width="60"
-                    height="30"
-                  >
-                    <div className="cd-node-label" style={{ fontWeight: 600 }}>
-                      {childNode.name}
-                    </div>
-                  </foreignObject>
-                </g>
-
-                {/* Empty state message */}
-                {networkMembers.length === 0 && (
-                  <text
-                    x="300"
-                    y="450"
-                    textAnchor="middle"
-                    fill="#6b7280"
-                    fontSize="14"
-                  >
-                    No network members yet. Add members to build the network.
-                  </text>
-                )}
-              </svg>
+              {/* Integrated Genogram Canvas */}
+              <CaseGenogramView
+                caseData={caseData}
+                networkData={networkData}
+                onMemberChange={loadCaseData}
+                style={{ height: '500px', marginTop: '12px' }}
+              />
 
               <div className="cd-map-tip">
-                💡 Tip: Right-click any node to open context menu. Pinned nodes represent the focus child(ren).
+                Use the genogram tools to add family members, draw relationships, and manage the support network.
               </div>
             </div>
           )}
